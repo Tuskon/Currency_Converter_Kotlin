@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 interface ListCountrysService {
 
-    @GET("all?fields=name,currencies")
+    @GET("b?fields=name,currencies")
     suspend fun getCountries(): Response<List<ListCountrysResponse>>
 }
