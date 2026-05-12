@@ -2,7 +2,8 @@ package com.example.currencyconverter.network.model
 
 data class ListCountrysResponse(
     val name: NameDto,
-    val currencies: Map<String, CurrencyDto> = emptyMap()
+    val currencies: Map<String, CurrencyDto> = emptyMap(),
+    val flags: FlagDto
 )
 
 data class NameDto(
@@ -19,4 +20,10 @@ data class NativeNameDto(
 data class CurrencyDto(
     val name: String,
     val symbol: String
+)
+
+data class FlagDto(
+    val png: String,
+    val svg: String,
+    val alt: String
 )

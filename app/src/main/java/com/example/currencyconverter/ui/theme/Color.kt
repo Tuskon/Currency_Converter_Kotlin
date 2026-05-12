@@ -11,3 +11,13 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val Warning = Color(0xFFE9D502)
+
+val TextTitleColorBlue = Color(0xFF1F2261)
+
+val TextTitleColorGray = Color(0xFF808080)
+
+val TextCountryColorBlue = Color(0xFF26278D)
+
+val IconColorChevronGray = Color(0xFF3C3C3C)
+
+val TitleInputColorGray = Color(0xFF989898)

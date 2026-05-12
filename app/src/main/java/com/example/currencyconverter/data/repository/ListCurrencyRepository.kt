@@ -5,8 +5,15 @@ import com.example.currencyconverter.network.model.ListCurrencysResponse
 
 class ListCurrencyRepository {
 
-    suspend fun getCountries(): ListCurrencysResponse? {
-        val response = ListCurrencysClient.api.getCurrency()
+    suspend fun getCurrencies(
+        firstCountry: String,
+        secondCountry: String
+    ): ListCurrencysResponse? {
+
+        val response = ListCurrencysClient.api.getCurrency(
+            firstCountry,
+            secondCountry
+        )
 
         return if (response.isSuccessful) {
             response.body()
