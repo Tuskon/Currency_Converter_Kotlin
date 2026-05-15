@@ -8,5 +8,7 @@ data class CountryBottomSheetUiState(
 
     val filteredCountries: List<Country> = emptyList(),
 
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+
+    val errorState: Boolean = false
 )

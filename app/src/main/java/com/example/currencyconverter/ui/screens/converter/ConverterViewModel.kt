@@ -1,7 +1,6 @@
 package com.example.currencyconverter.ui.screens.converter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,16 +17,22 @@ class ConverterViewModel : ViewModel() {
         private set
 
     @SuppressLint("DefaultLocale")
-    private fun getCurrencys(first: String, second: String,isFirstCountry: Boolean) {
-
+    private fun getCurrencys(
+        first: String,
+        second: String,
+        isFirstCountry: Boolean,
+        isSecondCountry: Boolean
+    ) {
         viewModelScope.launch {
-            if(isFirstCountry){
+            if (isFirstCountry) {
                 state = state.copy(
                     isLoadingFirstCountry = true,
                 )
-            }else{
+            }
+
+            if (isSecondCountry) {
                 state = state.copy(
-                    isLoadingSecondCountry = false,
+                    isLoadingSecondCountry = true,
                 )
             }
 
@@ -47,34 +52,24 @@ class ConverterViewModel : ViewModel() {
                         isLoadingSecondCountry = false
                     )
 
-                    val firstValue =
-                        state.valueFirstCountry!!.toDoubleOrNull() ?: 0.0
-
-                    state = state.copy(
-                        valueSecondCountry = String.format(
-                            "%.2f",
-                            convertFirstToSecond(firstValue)
-                        )
-                    )
-
-                    Log.d("Req", "$body")
 
                 } else {
 
                     state = state.copy(
                         isLoadingFirstCountry = false,
-                        isLoadingSecondCountry = false
+                        isLoadingSecondCountry = false,
+                        failCurrencyRequest = false
                     )
                 }
 
             } catch (e: Exception) {
 
-                Log.d("Req", "$e")
-
                 state = state.copy(
                     isLoadingFirstCountry = false,
-                    isLoadingSecondCountry = false
+                    isLoadingSecondCountry = false,
+                    failCurrencyRequest = true
                 )
+
             }
         }
     }
@@ -85,10 +80,6 @@ class ConverterViewModel : ViewModel() {
 
     private fun convertSecondToFirst(value: Double): Double {
         return value / (state.rate ?: 1.0)
-    }
-
-    fun goBack(navController: NavController) {
-        navController.popBackStack()
     }
 
     private fun formatCurrencyInput(value: String): String {
@@ -124,11 +115,20 @@ class ConverterViewModel : ViewModel() {
 
         val formatted = formatCurrencyInput(value)
 
+        if (formatted.isEmpty()) {
+            state = state.copy(
+                valueFirstCountry = "",
+                valueSecondCountry = ""
+            )
+            return
+        }
+
         val number = formatted.toDoubleOrNull() ?: 0.0
 
         state = state.copy(
             valueFirstCountry = formatted,
             valueSecondCountry = String.format(
+                java.util.Locale.US,
                 "%.2f",
                 convertFirstToSecond(number)
             )
@@ -140,11 +140,20 @@ class ConverterViewModel : ViewModel() {
 
         val formatted = formatCurrencyInput(value)
 
+        if (formatted.isEmpty()) {
+            state = state.copy(
+                valueSecondCountry = "",
+                valueFirstCountry = ""
+            )
+            return
+        }
+
         val number = formatted.toDoubleOrNull() ?: 0.0
 
         state = state.copy(
             valueSecondCountry = formatted,
             valueFirstCountry = String.format(
+                java.util.Locale.US,
                 "%.2f",
                 convertSecondToFirst(number)
             )
@@ -168,7 +177,8 @@ class ConverterViewModel : ViewModel() {
             getCurrencys(
                 currencieFormatted,
                 state.secondCountryDto!!.currency,
-                true
+                true,
+                false
             )
         }
     }
@@ -190,7 +200,8 @@ class ConverterViewModel : ViewModel() {
             getCurrencys(
                 state.firstCountryDto!!.currency,
                 currencieFormatted,
-                false
+                false,
+                true
             )
         }
     }
@@ -208,4 +219,33 @@ class ConverterViewModel : ViewModel() {
             showSecondBottomSheet = show
         )
     }
+
+
+    fun madeCurrencyRequestAgain() {
+        state = state.copy(
+            failCurrencyRequest = false
+        )
+
+        getCurrencys(
+            state.firstCountryDto!!.currency,
+            state.secondCountryDto!!.currency,
+            true,
+            true
+        )
+    }
+
+    fun goBackToInitialScreen(navController: NavController,choice: Boolean) {
+        if(choice){
+            state = state.copy(
+                failCurrencyRequest = false
+            )
+        }else{
+            state = state.copy(
+                showFirstBottomSheet = false,
+                showSecondBottomSheet = false
+            )
+        }
+        navController.popBackStack()
+    }
+
 }

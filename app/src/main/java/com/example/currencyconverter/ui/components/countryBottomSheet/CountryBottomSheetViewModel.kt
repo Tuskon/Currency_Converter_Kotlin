@@ -1,6 +1,5 @@
 package com.example.currencyconverter.ui.components.countryBottomSheet
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,26 +7,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.currencyconverter.network.client.ListCountrysClient
 import kotlinx.coroutines.launch
-import androidx.compose.ui.graphics.Brush
 
 class CountryBottomSheetViewModel : ViewModel() {
 
-    var state by mutableStateOf(
-        CountryBottomSheetUiState()
-    )
+    var state by mutableStateOf(CountryBottomSheetUiState())
+
         private set
 
     init {
         getCountries()
     }
 
-    private fun getCountries() {
-
+    fun getCountries() {
         viewModelScope.launch {
 
-            state = state.copy(
-                isLoading = true
-            )
+            state = state.copy(isLoading = true)
 
             try {
 
@@ -44,15 +38,13 @@ class CountryBottomSheetViewModel : ViewModel() {
                                 ?.value
                                 ?.name ?: ""
 
-                        val flag =
-                            item.flags.png
+                        val flag = item.flags.png
 
                         Country(
                             name = item.name?.common ?: "",
                             currencies = item.currencies,
                             flagPng = flag
                         )
-
                     } ?: emptyList()
 
                     state = state.copy(
@@ -61,23 +53,21 @@ class CountryBottomSheetViewModel : ViewModel() {
                         isLoading = false
                     )
 
-                    Log.d("Req", "$response")
 
                 } else {
 
-                    Log.d("Req", "$response")
-
                     state = state.copy(
-                        isLoading = false
+                        isLoading = false,
+                        errorState = true
                     )
                 }
 
             } catch (e: Exception) {
 
-                Log.d("Req", "$e")
 
                 state = state.copy(
-                    isLoading = false
+                    isLoading = false,
+                    errorState = true
                 )
             }
         }
@@ -86,8 +76,10 @@ class CountryBottomSheetViewModel : ViewModel() {
     fun updateSearch(value: String) {
 
         val filtered = state.countries.filter {
-
-            it.name.contains(value, ignoreCase = true)
+            it.name.contains(
+                value,
+                ignoreCase = true
+            )
         }
 
         state = state.copy(
@@ -95,6 +87,4 @@ class CountryBottomSheetViewModel : ViewModel() {
             filteredCountries = filtered
         )
     }
-
 }
-

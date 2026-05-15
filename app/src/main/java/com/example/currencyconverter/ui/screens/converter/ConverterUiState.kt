@@ -1,7 +1,6 @@
 package com.example.currencyconverter.ui.screens.converter
 
 import com.example.currencyconverter.network.model.ListCountrysResponse
-import com.example.currencyconverter.network.model.NativeNameDto
 
 data class ConverterUiState(
     val isLoading: Boolean = false,
@@ -16,6 +15,7 @@ data class ConverterUiState(
     val showSecondBottomSheet: Boolean = false,
     val isLoadingFirstCountry: Boolean = false,
     val isLoadingSecondCountry: Boolean = false,
+    val failCurrencyRequest: Boolean = false,
     val rate: Double? = 1.0,
 )
 

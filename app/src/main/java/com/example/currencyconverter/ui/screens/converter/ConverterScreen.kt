@@ -1,7 +1,6 @@
 package com.example.currencyconverter.ui.screens.converter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,20 +35,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalConfiguration
 import com.example.currencyconverter.ui.theme.IconColorChevronGray
 import androidx.compose.ui.text.TextStyle
 import com.example.currencyconverter.ui.theme.TitleInputColorGray
-import com.example.currencyconverter.ui.components.countryBottomSheet.Country
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.example.currencyconverter.ui.components.countryBottomSheet.CountryBottomSheet
-
+import com.example.currencyconverter.ui.components.modalFailRequest.ModalFailRequestCurrency
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -59,8 +57,6 @@ fun ConverterScreen(navController: NavController, viewModel: ConverterViewModel 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
-
-
 
 
     Column(
@@ -73,7 +69,11 @@ fun ConverterScreen(navController: NavController, viewModel: ConverterViewModel 
                         Color(0xFFF4F5F7)
                     )
                 )
-            ),
+            )
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .navigationBarsPadding()
+            .padding(bottom = 80.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -378,8 +378,9 @@ fun ConverterScreen(navController: NavController, viewModel: ConverterViewModel 
                         Text(
                             modifier = Modifier.padding(top = 10.dp),
                             text = "${
-                                if (state.valueFirstCountry.isNullOrEmpty()) "0.00" 
-                                else state.valueFirstCountry} ${state.firstCountryDto.currency}",
+                                if (state.valueFirstCountry.isNullOrEmpty()) "0.00"
+                                else state.valueFirstCountry
+                            } ${state.firstCountryDto.currency}",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
@@ -404,7 +405,8 @@ fun ConverterScreen(navController: NavController, viewModel: ConverterViewModel 
                             modifier = Modifier.padding(top = 10.dp),
                             text = "${
                                 if (state.valueSecondCountry.isNullOrEmpty()) "0.00"
-                                else state.valueSecondCountry} ${state.secondCountryDto.currency}",
+                                else state.valueSecondCountry
+                            } ${state.secondCountryDto.currency}",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
@@ -438,6 +440,17 @@ fun ConverterScreen(navController: NavController, viewModel: ConverterViewModel 
                     }
                     viewModel.optionSecondBottomSheet(false)
                     viewModel.optionFirstBottomSheet(false)
+                },
+                onErrorState={ viewModel.goBackToInitialScreen(navController,choice = false)}
+            )
+        }
+        if (state.failCurrencyRequest) {
+            ModalFailRequestCurrency(
+                onConfirm = {
+                    viewModel.madeCurrencyRequestAgain()
+                },
+                onDismiss = {
+                    viewModel.goBackToInitialScreen(navController,choice = true)
                 }
             )
         }
